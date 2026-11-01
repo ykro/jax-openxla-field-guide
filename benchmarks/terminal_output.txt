@@ -1,0 +1,12 @@
+======================================================================
+OUTSIDE JUDGE: JAX & OpenXLA Field Guide — Master Series Verification
+======================================================================
+[Repo 0] jax-openxla-field-guide: diagrams={'html': 3, 'svg': 3, 'png': 3}
+[Repo 1] jax-for-pytorch-devs: passed=True | diagrams={'html': 3, 'svg': 3, 'png': 3} | results=True | terminal_log=True
+[Repo 2] flax-nnx-transformer-from-scratch: passed=True | diagrams={'html': 3, 'svg': 3, 'png': 3} | results=True | terminal_log=True
+[Repo 3] keras3-multibackend-arena: passed=True | diagrams={'html': 3, 'svg': 3, 'png': 3} | results=True | terminal_log=True
+[Repo 4] gemma-tunix-spanish-posttraining: passed=True | diagrams={'html': 3, 'svg': 3, 'png': 3} | results=True | terminal_log=True
+[Repo 5] pytorch-xla-tpu-playbook: passed=True | diagrams={'html': 3, 'svg': 3, 'png': 3} | results=True | terminal_log=True
+----------------------------------------------------------------------
+OVERALL SERIES STATUS: PASS (html=18/18, svg=18/18, png=18/18)
+======================================================================

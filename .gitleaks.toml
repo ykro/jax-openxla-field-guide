@@ -1,0 +1,10 @@
+title = "Gitleaks Configuration for JAX & OpenXLA Field Guide"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Allow documentation placeholders"
+paths = [
+  '''\.env\.example$'''
+]

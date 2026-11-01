@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Árbol de decisión · ¿Qué herramienta del stack OpenXLA elegir?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #F7F6F2;
+      --color-paper-2: #EFECE6;
+      --color-ink:     #0F2547;
+      --color-muted:   #3B5B8C;
+      --color-accent:  #C59216;
+      --font-sans:     'Geist', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 2rem;
+    }
+
+    .frame { max-width: 1200px; width: 100%; min-width: 0; }
+    .diagram-container { width: 100%; overflow-x: auto; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 1.5rem;
+    }
+
+    svg { width: 100%; min-width: 1040px; display: block; }
+    @media print {
+      .diagram-container { overflow-x: visible; }
+      svg { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Flowchart · Field Guide JAX y OpenXLA</p>
+    <h1>¿Qué herramienta del ecosistema OpenXLA elegir según tu proyecto?</h1>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 1040 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="decision-flowchart-title decision-flowchart-desc">
+        <title id="decision-flowchart-title">¿Qué herramienta del ecosistema OpenXLA elegir según tu proyecto?</title>
+        <desc id="decision-flowchart-desc">Diagrama de flujo con decisiones ortogonales para elegir entre PyTorch/XLA, Keras 3, Gemma con Tunix, JAX puro o Flax NNX según el código existente y el objetivo técnico.</desc>
+        <defs>
+          <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse">
+            <circle cx="1" cy="1" r="0.9" fill="rgba(15,37,71,0.10)"/>
+          </pattern>
+          <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#3B5B8C"/></marker>
+          <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#C59216"/></marker>
+        </defs>
+
+        <rect width="100%" height="100%" fill="#F7F6F2"/>
+        <rect width="100%" height="100%" fill="url(#dots)" opacity="0.55"/>
+
+        <!-- Arrows (drawn first, behind nodes, 100% orthogonal) -->
+        <!-- Start -> D1 -->
+        <line x1="360" y1="84" x2="360" y2="116" stroke="#3B5B8C" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <!-- D1 -> Repo 5 (YES right) -->
+        <line x1="488" y1="164" x2="660" y2="164" stroke="#3B5B8C" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <!-- D1 -> D2 (NO down) -->
+        <line x1="360" y1="212" x2="360" y2="252" stroke="#3B5B8C" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <!-- D2 -> Repo 3 (YES right) -->
+        <line x1="488" y1="300" x2="660" y2="300" stroke="#3B5B8C" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <!-- D2 -> D3 (NO down) -->
+        <line x1="360" y1="348" x2="360" y2="388" stroke="#3B5B8C" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <!-- D3 -> Repo 4 (YES right) -->
+        <line x1="488" y1="436" x2="660" y2="436" stroke="#3B5B8C" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <!-- D3 -> Focal Repo 1 + 2 (NO down, Gold happy path) -->
+        <line x1="360" y1="484" x2="360" y2="520" stroke="#C59216" stroke-width="1.6" marker-end="url(#arrow-accent)"/>
+
+        <!-- Arrow labels (with opaque #F7F6F2 mask and >=6px gap from stroke) -->
+        <rect x="552" y="142" width="32" height="14" rx="2" fill="#F7F6F2"/>
+        <text x="568" y="152" fill="#3B5B8C" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">SÍ</text>
+
+        <rect x="372" y="224" width="28" height="14" rx="2" fill="#F7F6F2"/>
+        <text x="386" y="234" fill="#3B5B8C" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">NO</text>
+
+        <rect x="552" y="278" width="32" height="14" rx="2" fill="#F7F6F2"/>
+        <text x="568" y="288" fill="#3B5B8C" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">SÍ</text>
+
+        <rect x="372" y="360" width="28" height="14" rx="2" fill="#F7F6F2"/>
+        <text x="386" y="370" fill="#3B5B8C" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">NO</text>
+
+        <rect x="552" y="414" width="32" height="14" rx="2" fill="#F7F6F2"/>
+        <text x="568" y="424" fill="#3B5B8C" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">SÍ</text>
+
+        <rect x="372" y="494" width="128" height="14" rx="2" fill="#F7F6F2"/>
+        <text x="436" y="504" fill="#9A6F0B" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.10em" font-weight="600">CONTROL TOTAL</text>
+
+        <!-- Start Node (Oval rx=20) -->
+        <rect x="232" y="36" width="256" height="48" rx="20" fill="#EFECE6" stroke="#3B5B8C" stroke-width="1"/>
+        <text x="360" y="64" fill="#0F2547" font-size="13" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Nuevo reto en GPU o Cloud TPU</text>
+
+        <!-- Diamond 1: PyTorch legacy? -->
+        <polygon points="360,116 488,164 360,212 232,164" fill="#FFFFFF" stroke="#0F2547" stroke-width="1"/>
+        <text x="360" y="160" fill="#0F2547" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">¿Tienes un modelo grande</text>
+        <text x="360" y="176" fill="#0F2547" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">en PyTorch sin reescribir?</text>
+
+        <!-- Outcome 1: Repo 5 (PyTorch/XLA) -->
+        <rect x="660" y="136" width="320" height="56" rx="6" fill="#FFFFFF" stroke="#0F2547" stroke-width="1"/>
+        <text x="820" y="160" fill="#0F2547" font-size="13" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Proyecto 5 · PyTorch/XLA Playbook</text>
+        <text x="820" y="178" fill="#3B5B8C" font-size="9.5" font-family="'Geist Mono', monospace" text-anchor="middle">pytorch-xla-tpu-playbook · 0 CPU fallbacks</text>
+
+        <!-- Diamond 2: Multi-backend portability? -->
+        <polygon points="360,252 488,300 360,348 232,300" fill="#FFFFFF" stroke="#0F2547" stroke-width="1"/>
+        <text x="360" y="296" fill="#0F2547" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">¿Necesitas portabilidad entre</text>
+        <text x="360" y="312" fill="#0F2547" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">JAX, PyTorch y TensorFlow?</text>
+
+        <!-- Outcome 2: Repo 3 (Keras 3) -->
+        <rect x="660" y="272" width="320" height="56" rx="6" fill="#FFFFFF" stroke="#0F2547" stroke-width="1"/>
+        <text x="820" y="296" fill="#0F2547" font-size="13" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Proyecto 3 · Keras 3 Multi-Backend</text>
+        <text x="820" y="314" fill="#3B5B8C" font-size="9.5" font-family="'Geist Mono', monospace" text-anchor="middle">keras3-multibackend-arena · KERAS_BACKEND=jax</text>
+
+        <!-- Diamond 3: Post-train Gemma? -->
+        <polygon points="360,388 488,436 360,484 232,436" fill="#FFFFFF" stroke="#0F2547" stroke-width="1"/>
+        <text x="360" y="432" fill="#0F2547" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">¿Vas a alinear o ajustar</text>
+        <text x="360" y="448" fill="#0F2547" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">un LLM abierto (Gemma)?</text>
+
+        <!-- Outcome 3: Repo 4 (Gemma + Tunix) -->
+        <rect x="660" y="408" width="320" height="56" rx="6" fill="#FFFFFF" stroke="#0F2547" stroke-width="1"/>
+        <text x="820" y="432" fill="#0F2547" font-size="13" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Proyecto 4 · Gemma + Tunix (LoRA / GRPO)</text>
+        <text x="820" y="450" fill="#3B5B8C" font-size="9.5" font-family="'Geist Mono', monospace" text-anchor="middle">gemma-tunix-spanish-posttraining · TPU Mesh</text>
+
+        <!-- Outcome 4 (FOCAL GOLD): Repos 1 & 2 (JAX + Flax NNX) -->
+        <rect x="180" y="520" width="360" height="64" rx="6" fill="rgba(197,146,22,0.12)" stroke="#C59216" stroke-width="1.6"/>
+        <text x="360" y="546" fill="#0F2547" font-size="13.5" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Proyectos 1 y 2 · JAX Puro + Flax NNX desde cero</text>
+        <text x="360" y="566" fill="#9A6F0B" font-size="9.5" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="500">jax-for-pytorch-devs → flax-nnx-transformer-from-scratch</text>
+
+        <!-- Bottom Legend Strip -->
+        <line x1="60" y1="600" x2="980" y2="600" stroke="rgba(15,37,71,0.14)" stroke-width="0.8"/>
+        <rect x="60" y="612" width="20" height="12" rx="6" fill="#EFECE6" stroke="#3B5B8C" stroke-width="1"/>
+        <text x="88" y="622" fill="#3B5B8C" font-size="8.5" font-family="'Geist', sans-serif">Inicio (óvalo)</text>
+
+        <polygon points="200,618 212,612 224,618 212,624" fill="#FFFFFF" stroke="#0F2547" stroke-width="1"/>
+        <text x="232" y="622" fill="#3B5B8C" font-size="8.5" font-family="'Geist', sans-serif">Decisión (rombo)</text>
+
+        <rect x="356" y="612" width="20" height="12" rx="2" fill="#FFFFFF" stroke="#0F2547" stroke-width="1"/>
+        <text x="384" y="622" fill="#3B5B8C" font-size="8.5" font-family="'Geist', sans-serif">Ruta especializada</text>
+
+        <rect x="520" y="612" width="20" height="12" rx="2" fill="rgba(197,146,22,0.14)" stroke="#C59216" stroke-width="1.4"/>
+        <text x="548" y="622" fill="#9A6F0B" font-size="8.5" font-family="'Geist', sans-serif" font-weight="600">Fundamento recomendado (Proyectos 1 y 2)</text>
+      </svg>
+    </div>
+  </div>
+</body>
+</html>
