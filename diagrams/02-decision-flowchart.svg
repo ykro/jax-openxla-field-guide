@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg viewBox="0 0 1040 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="decision-flowchart-title decision-flowchart-desc" id="d-02-decision-flowchart-root">
         <title id="decision-flowchart-title">¿Qué herramienta del ecosistema OpenXLA elegir según tu proyecto?</title>
-        <desc id="decision-flowchart-desc">Diagrama de flujo con decisiones ortogonales para elegir entre PyTorch/XLA, Keras 3, Gemma con Tunix, JAX puro o Flax NNX según el código existente y el objetivo técnico.</desc>
+        <desc id="decision-flowchart-desc">Diagrama de flujo con decisiones ortogonales para elegir entre PyTorch con TorchTPU, Keras 3, Gemma con Tunix, JAX puro o Flax NNX según el código existente y el objetivo técnico.</desc>
         <defs>
       <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Noto+Serif:ital@0;1&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;family=Noto+Sans+TC:wght@400;500;600&amp;family=Noto+Serif+TC:wght@400&amp;display=swap');
       #d-02-decision-flowchart-root { --color-paper:   #F7F6F2;
@@ -69,10 +69,10 @@
         <text x="360" y="160" fill="#0F2547" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">¿Tienes un modelo grande</text>
         <text x="360" y="176" fill="#0F2547" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">en PyTorch sin reescribir?</text>
 
-        <!-- Outcome 1: Repo 5 (PyTorch/XLA) -->
+        <!-- Outcome 1: Repo 5 (TorchTPU) -->
         <rect x="660" y="136" width="320" height="56" rx="6" fill="#FFFFFF" stroke="#0F2547" stroke-width="1"/>
-        <text x="820" y="160" fill="#0F2547" font-size="13" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Proyecto 5 · PyTorch/XLA Playbook</text>
-        <text x="820" y="178" fill="#3B5B8C" font-size="9.5" font-family="'Geist Mono', monospace" text-anchor="middle">pytorch-xla-tpu-playbook · 0 CPU fallbacks</text>
+        <text x="820" y="160" fill="#0F2547" font-size="13" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Proyecto 5 · TorchTPU Playbook</text>
+        <text x="820" y="178" fill="#3B5B8C" font-size="9.5" font-family="'Geist Mono', monospace" text-anchor="middle">torchtpu-playbook · 17 → 1 grafo</text>
 
         <!-- Diamond 2: Multi-backend portability? -->
         <polygon points="360,252 488,300 360,348 232,300" fill="#FFFFFF" stroke="#0F2547" stroke-width="1"/>

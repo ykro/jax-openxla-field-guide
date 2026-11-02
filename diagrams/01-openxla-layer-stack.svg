@@ -43,8 +43,8 @@
         <!-- L4 — Frameworks de Autoría -->
         <rect x="120" y="144" width="840" height="64" fill="#F7F6F2" stroke="#0f2547" stroke-opacity="0.12" stroke-width="1"/>
         <text x="144" y="180" fill="#3B5B8C" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.14em" font-weight="500">L4 · AUTORÍA</text>
-        <text x="272" y="182" fill="#0F2547" font-size="16" font-weight="600" font-family="'Geist', sans-serif">Flax NNX · Keras 3 · PyTorch/XLA</text>
-        <text x="940" y="182" fill="#3B5B8C" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.06em">nnx.Module, KERAS_BACKEND, torch_xla</text>
+        <text x="272" y="182" fill="#0F2547" font-size="16" font-weight="600" font-family="'Geist', sans-serif">Flax NNX · Keras 3 · TorchTPU</text>
+        <text x="940" y="182" fill="#3B5B8C" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.06em">nnx.Module, KERAS_BACKEND, torch_tpu</text>
 
         <!-- L3 — Transformaciones Funcionales -->
         <rect x="120" y="208" width="840" height="64" fill="#FFFFFF" stroke="#0f2547" stroke-opacity="0.12" stroke-width="1"/>
@@ -68,5 +68,5 @@
         <!-- Legend & Focal Caption Strip -->
         <rect x="120" y="442" width="12" height="12" rx="2" fill="#c59216" fill-opacity="0.18" stroke="#C59216" stroke-width="1.2"/>
         <text x="140" y="452" fill="#9A6F0B" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.16em" font-weight="600">CAPA FOCAL (DORADO)</text>
-        <text x="272" y="452" fill="#3B5B8C" font-size="11" font-family="'Instrument Serif', serif" font-style="italic">Sin importar si escribes en JAX, Keras 3 o PyTorch/XLA, OpenXLA fusiona tus operaciones en un solo kernel antes de tocar la GPU o TPU.</text>
+        <text x="272" y="452" fill="#3B5B8C" font-size="11" font-family="'Instrument Serif', serif" font-style="italic">Sin importar si escribes en JAX, Keras 3 o PyTorch con TorchTPU, OpenXLA fusiona tus operaciones en un solo kernel antes de tocar la GPU o TPU.</text>
       </svg>

@@ -2,7 +2,7 @@
 """Validador maestro de la serie De PyTorch a JAX y OpenXLA en Google Cloud.
 
 Consolida las métricas deterministas (Outside Judges) de los 5 repositorios
-prácticos, verifica la integridad de los 18 diagramas (HTML, SVG, PNG) en los
+prácticos, verifica la integridad de los diagramas (al menos 3 por repo, cada HTML con su SVG y PNG) en los
 6 repositorios y audita que todos los reportes de benchmark estén completos.
 """
 
@@ -19,7 +19,7 @@ PROJECTS = [
     ("flax-nnx-transformer-from-scratch", "verify_transformer.py"),
     ("keras3-multibackend-arena", "verify_arena.py"),
     ("gemma-tunix-spanish-posttraining", "verify_posttraining.py"),
-    ("pytorch-xla-tpu-playbook", "verify_playbook.py"),
+    ("torchtpu-playbook", "verify_torchtpu_playbook.py"),
 ]
 
 
@@ -69,9 +69,9 @@ def main() -> int:
             and (repo_dir / judge_script).exists()
             and results_file.exists()
             and terminal_file.exists()
-            and diag_counts["html"] == 3
-            and diag_counts["svg"] == 3
-            and diag_counts["png"] == 3
+            and diag_counts["html"] >= 3
+            and diag_counts["svg"] == diag_counts["html"]
+            and diag_counts["png"] == diag_counts["html"]
         )
         status: dict[str, object] = {
             "exists": repo_dir.exists(),
@@ -99,7 +99,8 @@ def main() -> int:
             f"results={results_file.exists()} | terminal_log={terminal_file.exists()}"
         )
 
-    if total_html != 18 or total_svg != 18 or total_png != 18:
+    # At least 3 diagrams per repo (A5 ships 4); every HTML source has its SVG and PNG.
+    if total_html < 18 or total_svg != total_html or total_png != total_html:
         all_passed = False
 
     summary: dict[str, object] = {
@@ -119,7 +120,7 @@ def main() -> int:
     lines.append("----------------------------------------------------------------------")
     lines.append(
         f"OVERALL SERIES STATUS: {'PASS' if all_passed else 'FAIL'} "
-        f"(html={total_html}/18, svg={total_svg}/18, png={total_png}/18)"
+        f"(html={total_html}, svg={total_svg}, png={total_png}; minimum 18 each)"
     )
     lines.append("======================================================================")
     terminal_report = "\n".join(lines) + "\n"
