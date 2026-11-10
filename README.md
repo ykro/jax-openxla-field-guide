@@ -25,9 +25,9 @@
 
 ## Mapa de Repositorios y Resultados Verificados (Outside Judges)
 
-Cada repositorio contiene **5 experimentos ejecutables (`01` a `05`)**, suite de tests con `pytest`, un script de verificación (`verify_*.py`, con checks deterministas; los tiempos varían entre corridas) y runners on-demand con auto-teardown para Google Cloud (`Vertex AI GPU L4`, `Cloud TPU v5e` y `Cloud Run` con escala a cero). Los runners están preparados, pero las cifras publicadas de la Serie A se midieron en el CPU de una laptop; cada speedup va con su baseline.
+Cada repositorio contiene **5 experimentos ejecutables (`01` a `05`)**, suite de tests con `pytest`, un script de verificación (`verify_*.py`, con checks deterministas; los tiempos varían entre corridas) y runners on-demand con auto-teardown para Google Cloud (`Vertex AI GPU L4`, `Cloud TPU v5e` y `Cloud Run` con escala a cero). Los runners están preparados, pero las cifras publicadas de esta ruta se midieron en el CPU de una laptop; cada speedup va con su baseline.
 
-### Serie A — De PyTorch a JAX y OpenXLA
+### De PyTorch a JAX y OpenXLA
 
 | # | Repositorio | Qué construye y demuestra | Outside Judge (Evidencia real medida) |
 |---|---|---|---|
@@ -41,7 +41,7 @@ Cada repositorio contiene **5 experimentos ejecutables (`01` a `05`)**, suite de
 
 ## Onboarding y Cómo Recorrer la Serie
 
-Sigue los 5 niveles en orden progresivo desde tu terminal (o empieza por la [Serie B para Software Devs](https://github.com/ykro/jax-ml-for-software-devs-field-guide) si vienes de Python/NumPy sin PyTorch).
+Sigue los 5 niveles en orden progresivo desde tu terminal (o empieza por el [Field Guide de JAX y ML para Software Devs](https://github.com/ykro/jax-ml-for-software-devs-field-guide) si vienes de Python/NumPy sin PyTorch).
 
 ### 1. Orden progresivo de ejecución
 

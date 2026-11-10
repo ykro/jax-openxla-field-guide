@@ -99,7 +99,7 @@ def main() -> int:
             f"results={results_file.exists()} | terminal_log={terminal_file.exists()}"
         )
 
-    # At least 3 diagrams per repo (A5 ships 4); every HTML source has its SVG and PNG.
+    # At least 3 diagrams per repo (torchtpu-playbook ships 4); every HTML source has its SVG and PNG.
     if total_html < 18 or total_svg != total_html or total_png != total_html:
         all_passed = False
 
