@@ -1,5 +1,5 @@
 ======================================================================
-OUTSIDE JUDGE: JAX & OpenXLA Field Guide — Master Series Verification
+OUTSIDE JUDGE: JAX & OpenXLA Field Guide — index and project verification
 ======================================================================
 [Repo 0] jax-openxla-field-guide: diagrams={'html': 3, 'svg': 3, 'png': 3}
 [Repo 1] jax-for-pytorch-devs: passed=True | diagrams={'html': 3, 'svg': 3, 'png': 3} | results=True | terminal_log=True

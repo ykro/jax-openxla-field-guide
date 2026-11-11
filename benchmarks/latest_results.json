@@ -31,22 +31,35 @@
           "jax_version": "0.12.0.1",
           "torch_version": "2.15.0",
           "jax_backend": "cpu",
-          "jax_device": "cpu:0"
+          "jax_device": "cpu:0",
+          "cpu_count": 10,
+          "timing": "median per call after warmup (01, 03, 04); single pass (05)",
+          "load_average_before": [
+            11.39,
+            27.87,
+            36.05
+          ],
+          "load_average_after": [
+            10.88,
+            27.49,
+            35.86
+          ]
         },
         "experiments": {
           "01_jit_operator_fusion": {
             "batch_size": 64,
             "hidden_dim": 128,
             "n_iters": 100,
-            "torch_eager_ms": 0.8959,
-            "jax_eager_ms": 1.4055,
-            "jax_jit_ms": 0.1589,
-            "speedup_vs_jax_eager": 8.85,
-            "speedup_vs_torch_eager": 5.64,
+            "torch_eager_ms": 0.8752,
+            "jax_eager_ms": 1.4849,
+            "jax_jit_ms": 0.162,
+            "speedup_vs_jax_eager": 9.17,
+            "speedup_vs_torch_eager": 5.4,
             "max_diff_torch_jit": 3.337860107421875e-06,
             "max_diff_eager_jit": 2.384185791015625e-06,
             "jaxpr_num_equations": 168,
-            "stablehlo_lines": 325
+            "stablehlo_lines": 325,
+            "xla_fusions": 24
           },
           "02_pure_functions_pytrees": {
             "n_steps": 10,
@@ -65,23 +78,26 @@
             "in_dim": 64,
             "out_dim": 16,
             "n_iters": 20,
-            "loop_ms": 24.6432,
-            "vmap_ms": 0.1776,
-            "speedup": 138.78,
+            "loop_ms": 23.5285,
+            "vmap_ms": 0.1234,
+            "speedup": 190.64,
             "max_diff_gw": 1.3969838619232178e-09,
-            "max_diff_gb": 9.313225746154785e-10
+            "max_diff_gb": 9.313225746154785e-10,
+            "loop_traced_ops": 2054
           },
           "04_lax_scan_unrolling": {
             "seq_len": 500,
             "batch_size": 32,
             "hidden_dim": 64,
             "n_iters": 15,
-            "python_loop_ms": 34.5272,
-            "lax_scan_ms": 2.8744,
-            "speedup": 12.01,
+            "python_loop_ms": 28.0787,
+            "lax_scan_ms": 2.825,
+            "speedup": 9.94,
             "max_diff_final": 0.0,
             "max_diff_traj": 0.0,
-            "top_level_jaxpr_eqns": 1
+            "top_level_jaxpr_eqns": 1,
+            "python_loop_traced_ops": 1501,
+            "stablehlo_while_ops": 1
           },
           "05_dynamic_shapes_trap": {
             "num_sequences": 24,
@@ -93,10 +109,13 @@
             "naive_trace_count": 24,
             "bucket_warmup_traces": 3,
             "bucket_extra_recompilations": 0,
-            "naive_total_ms": 1061.29,
-            "bucket_total_ms": 19.74,
-            "speedup": 53.76,
-            "max_output_diff": 8.940696716308594e-08
+            "naive_total_ms": 975.81,
+            "bucket_total_ms": 17.58,
+            "speedup": 55.5,
+            "max_output_diff": 8.940696716308594e-08,
+            "real_tokens": 3048,
+            "padded_tokens": 4224,
+            "padding_fraction": 0.2784
           }
         },
         "all_verifications_passed": true
@@ -120,7 +139,11 @@
           "jax_backend": "cpu",
           "flax": "0.12.12",
           "optax": "0.2.8",
-          "torch": "2.15.0"
+          "torch": "2.15.0",
+          "cpu_model": "Apple M1 Max",
+          "cpu_count": 10,
+          "load_average_1min_before": 8.48,
+          "load_average_1min_after": 9.0
         },
         "exp01_nnx_vs_torch": {
           "d_model": 64,
@@ -144,12 +167,14 @@
           "forward_calls_count": 1,
           "counter_leaves": 1,
           "max_abs_diff_vs_torch": 4.76837158203125e-07,
-          "torch_eager_ms": 0.34,
-          "nnx_eager_ms": 66.721
+          "torch_eager_ms": 0.308,
+          "nnx_eager_ms": 55.902
         },
         "exp02_split_merge": {
           "base_param_scalars": 4096,
           "lora_param_scalars": 1024,
+          "param_first_filter_lora_scalars": 0,
+          "param_first_filter_param_scalars": 5120,
           "batch_stat_scalars": 64,
           "total_leaves": 4,
           "split_merge_weight_max_diff": 0.0,
@@ -192,12 +217,18 @@
             "step_40": 0.01549,
             "step_50": 0.01053
           },
-          "first_step_compile_and_run_ms": 449.39,
-          "steady_state_step_ms": 3.3,
-          "speedup_after_jit": 136.2
+          "first_step_compile_and_run_ms": 440.03,
+          "steady_state_step_ms": 4.387,
+          "steady_state_stat": "median of steps 2..N",
+          "mutation_counter_after_one_call": {
+            "plain_jax_jit_counter": 0,
+            "nnx_jit_counter": 1
+          },
+          "speedup_after_jit": 100.3
         },
         "exp05_stablehlo_recompiles": {
           "steps_executed": 50,
+          "traces_at_lower": 1,
           "traces_on_step_1": 1,
           "total_traces_after_50_steps": 1,
           "recompilations_after_step_1": 0,
@@ -205,7 +236,8 @@
           "stablehlo_dot_general_count": 57,
           "stablehlo_reduce_count": 29,
           "compiled_hlo_fusion_mentions": 281,
-          "final_loss": 0.01053
+          "final_loss": 0.01053,
+          "python_int_attr_change_traces": 2
         },
         "invariants": {
           "nnx_vs_torch_parity_ok": true,
@@ -229,6 +261,22 @@
       },
       "metrics": {
         "project": "keras3-multibackend-arena",
+        "environment": {
+          "cpu": "Apple M1 Max",
+          "cores": 10,
+          "load_average_before": 8.2,
+          "load_average_after": 6.8,
+          "versions": {
+            "keras": "3.15.1",
+            "jax": "0.12.0.1",
+            "torch": "2.15.0"
+          }
+        },
+        "backend_check": [
+          "[backend=jax  ] output_shape=(8, 10) row0_sum=1.000000 row0_max=0.502002 params=657,418",
+          "[backend=torch] output_shape=(8, 10) row0_sum=1.000000 row0_max=0.373826 params=657,418",
+          "[backend=numpy] output_shape=(8, 10) row0_sum=1.000000 row0_max=0.218431 params=657,418"
+        ],
         "portability": {
           "output_shape": [
             32,
@@ -241,55 +289,87 @@
         "arena": {
           "jax": {
             "backend": "jax",
+            "device": "cpu",
+            "jit_compile": true,
             "batch_size": 256,
             "steps": 45,
             "params": 657418,
-            "warmup_compile_ms": 659.84,
-            "train_step_mean_ms": 10.325,
-            "train_step_p50_ms": 10.335,
-            "train_step_p95_ms": 11.056,
-            "train_throughput_samples_sec": 24794.8,
-            "eval_step_mean_ms": 4.614,
-            "eval_throughput_samples_sec": 55482.9,
+            "warmup_compile_ms": 616.8,
+            "train_step_mean_ms": 9.697,
+            "train_step_p50_ms": 9.667,
+            "train_step_p95_ms": 10.069,
+            "train_throughput_samples_sec": 26481.3,
+            "eval_step_mean_ms": 4.224,
+            "eval_step_p50_ms": 4.192,
+            "eval_throughput_samples_sec": 61074.2,
             "final_loss": 3e-05
           },
           "torch": {
             "backend": "torch",
+            "device": "mps",
+            "jit_compile": false,
             "batch_size": 256,
             "steps": 45,
             "params": 657418,
-            "warmup_compile_ms": 159.03,
-            "train_step_mean_ms": 20.643,
-            "train_step_p50_ms": 20.646,
-            "train_step_p95_ms": 21.305,
-            "train_throughput_samples_sec": 12401.3,
-            "eval_step_mean_ms": 8.411,
-            "eval_throughput_samples_sec": 30435.1,
+            "warmup_compile_ms": 154.5,
+            "train_step_mean_ms": 18.401,
+            "train_step_p50_ms": 19.131,
+            "train_step_p95_ms": 21.25,
+            "train_throughput_samples_sec": 13381.7,
+            "eval_step_mean_ms": 7.878,
+            "eval_step_p50_ms": 7.81,
+            "eval_throughput_samples_sec": 32778.1,
             "final_loss": 3e-05
           },
-          "jax_vs_torch_train_speedup": 2.0,
-          "jax_vs_torch_eval_speedup": 1.82
+          "torch-cpu": {
+            "backend": "torch",
+            "device": "cpu",
+            "jit_compile": false,
+            "batch_size": 256,
+            "steps": 45,
+            "params": 657418,
+            "warmup_compile_ms": 49.14,
+            "train_step_mean_ms": 19.773,
+            "train_step_p50_ms": 20.131,
+            "train_step_p95_ms": 20.735,
+            "train_throughput_samples_sec": 12716.9,
+            "eval_step_mean_ms": 6.6,
+            "eval_step_p50_ms": 6.653,
+            "eval_throughput_samples_sec": 38478.6,
+            "final_loss": 3e-05
+          },
+          "jax_vs_torch_default_device": {
+            "train": 1.98,
+            "eval": 1.86
+          },
+          "jax_vs_torch_cpu": {
+            "train": 2.08,
+            "eval": 1.59
+          },
+          "statistic": "median step latency after 4 warmup steps (45 timed steps)"
         },
         "xla_fusion": {
           "hlo_lines": 1026,
-          "hlo_fusion_ops": 249,
+          "jaxpr_primitive_ops": 207,
+          "hlo_fusion_instructions": 60,
+          "hlo_fusion_substring_count": 249,
           "hlo_dot_ops": 20,
           "hlo_custom_calls": 0,
-          "eager_forward_ms": 7.176,
-          "xla_jit_forward_ms": 4.065,
-          "xla_fusion_speedup": 1.77
+          "eager_forward_ms": 6.013,
+          "xla_jit_forward_ms": 3.764,
+          "jit_vs_eager_forward_speedup": 1.6
         },
         "stateless_custom_loop": {
-          "warmup_compile_ms": 373.32,
+          "warmup_compile_ms": 351.25,
           "initial_loss": 2.6389,
           "final_loss": 0.6945,
           "stateful_verify_loss": 0.65589,
           "initial_acc": 0.1211,
           "final_acc": 0.9141,
           "final_grad_norm": 0.8841,
-          "mean_step_ms": 9.866,
-          "train_throughput_samples_sec": 25946.4,
-          "speedup_vs_torch_train": 2.09
+          "mean_step_ms": 9.19,
+          "step_p50_ms": 9.173,
+          "train_throughput_samples_sec": 27908.4
         },
         "serving_smoke_test": {
           "backend": "jax",
@@ -307,7 +387,7 @@
             0.015462,
             0.006923
           ],
-          "latency_ms": 4.167,
+          "latency_ms": 3.926,
           "artifact_size_kb": 7787.6
         }
       },
@@ -326,7 +406,12 @@
       "metrics": {
         "project": "gemma-tunix-spanish-posttraining",
         "all_checks_passed": true,
-        "execution_time_seconds": 16.076,
+        "execution_time_seconds": 15.789,
+        "host_load_average_1_5_15min": [
+          8.54,
+          25.6,
+          34.94
+        ],
         "checks": {
           "multi_device_mesh_active": true,
           "weight_shard_compression_2x": true,
@@ -427,6 +512,9 @@
         },
         "stage_04_05_grpo_acid_test": {
           "base_mean_reward": -0.0625,
+          "post_sft_mean_reward": 1.1375,
+          "post_sft_format_compliance_pct": 50.0,
+          "num_sft_warmup_steps": 4,
           "grpo_mean_reward": 1.4875,
           "reward_delta": 1.55,
           "base_format_compliance_pct": 0.0,

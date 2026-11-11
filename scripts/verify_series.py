@@ -50,7 +50,7 @@ def main() -> int:
 
     lines = [
         "======================================================================",
-        "OUTSIDE JUDGE: JAX & OpenXLA Field Guide — Master Series Verification",
+        "OUTSIDE JUDGE: JAX & OpenXLA Field Guide — index and project verification",
         "======================================================================",
         f"[Repo 0] {INDEX_SLUG}: diagrams={index_diagrams}",
     ]
