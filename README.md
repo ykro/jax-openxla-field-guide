@@ -46,7 +46,9 @@ Sigue los 5 niveles en orden progresivo desde tu terminal (o empieza por el [Fie
 ### 1. Orden progresivo de ejecución
 
 1. **Nivel 1 — Fundamentos del compilador ([jax-for-pytorch-devs](https://github.com/ykro/jax-for-pytorch-devs))** para dominar `@jax.jit`, `Jaxpr`, `StableHLO`, PyTrees puros, `jax.vmap`, `jax.lax.scan` y *static bucket padding*.
+   - **YouTube** · [Video de Práctica](https://youtu.be/49o55HV0fPU) · **Substack** · [La memoria que el paso puro de JAX cobra y PyTorch no](https://ykro1.substack.com/p/memoria-del-paso-puro-de-jax)
 2. **Nivel 2 — Ergonomía con estado en Python ([flax-nnx-transformer-from-scratch](https://github.com/ykro/flax-nnx-transformer-from-scratch))** para construir un Transformer causal con `nnx.Module`, `nnx.split` y `nnx.merge`.
+   - **YouTube** · [Video de Práctica](https://youtu.be/0IFZJ6tWw-s) · **Substack** · [Cuatro fallas silenciosas de Flax NNX al guardar un checkpoint](https://ykro1.substack.com/p/cuatro-fallas-silenciosas-de-flax-nnx)
 3. **Nivel 3 — Portabilidad multi-backend ([keras3-multibackend-arena](https://github.com/ykro/keras3-multibackend-arena))** para comparar `KERAS_BACKEND=jax` contra `torch`, aislar lo que aporta compilar y preparar un endpoint para Cloud Run con escala a cero.
 4. **Nivel 4 — Post-entrenamiento distribuido ([gemma-tunix-spanish-posttraining](https://github.com/ykro/gemma-tunix-spanish-posttraining))** para particionar modelos en meshes 2D `('data', 'model')`, inyectar adaptadores `nnx.LoRA` y alinear con GRPO.
 5. **Nivel 5 — PyTorch en Cloud TPU ([torchtpu-playbook](https://github.com/ykro/torchtpu-playbook))** para llevar código `torch.nn.Module` a Cloud TPU con `TorchTPU`, compilar sin graph breaks ni recompilaciones, repartir con DTensor y llamar a `@jax.jit` desde PyTorch con DLPack.
