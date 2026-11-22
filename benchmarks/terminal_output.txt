@@ -1,12 +1,13 @@
-======================================================================
-OUTSIDE JUDGE: JAX & OpenXLA Field Guide — index and project verification
-======================================================================
-[Repo 0] jax-openxla-field-guide: diagrams={'html': 3, 'svg': 3, 'png': 3}
-[Repo 1] jax-for-pytorch-devs: passed=True | diagrams={'html': 3, 'svg': 3, 'png': 3} | results=True | terminal_log=True
-[Repo 2] flax-nnx-transformer-from-scratch: passed=True | diagrams={'html': 3, 'svg': 3, 'png': 3} | results=True | terminal_log=True
-[Repo 3] keras3-multibackend-arena: passed=True | diagrams={'html': 3, 'svg': 3, 'png': 3} | results=True | terminal_log=True
-[Repo 4] gemma-tunix-spanish-posttraining: passed=True | diagrams={'html': 3, 'svg': 3, 'png': 3} | results=True | terminal_log=True
-[Repo 5] torchtpu-playbook: passed=True | diagrams={'html': 4, 'svg': 4, 'png': 4} | results=True | terminal_log=True
-----------------------------------------------------------------------
-OVERALL SERIES STATUS: PASS (html=19, svg=19, png=19; minimum 18 each)
-======================================================================
+========================================================================
+PyTorch to JAX and OpenXLA Field Guide · index and unit repos
+========================================================================
+jax-openxla-field-guide (index): 3 diagrams | PASS
+jax-for-pytorch-devs: judge, results, log and 3 diagrams | PASS
+flax-nnx-transformer-from-scratch: judge, results, log and 3 diagrams | PASS
+keras3-multibackend-arena: judge, results, log and 3 diagrams | PASS
+gemma-tunix-spanish-posttraining: judge, results, log and 3 diagrams | PASS
+torchtpu-playbook: judge, results, log and 4 diagrams | PASS
+------------------------------------------------------------------------
+5 checked, 0 skipped, 0 failed.
+ALL CHECKED UNITS PASSED.
+========================================================================

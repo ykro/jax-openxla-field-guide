@@ -1,0 +1,6 @@
+# Probado con Python 3.12, JAX 0.12, PyTorch 2.15 y NumPy 2.5 en CPU.
+jax>=0.12
+torch>=2.11
+numpy>=1.26
+pytest>=8
+ruff>=0.5

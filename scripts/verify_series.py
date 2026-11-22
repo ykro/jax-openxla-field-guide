@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
-"""Validador maestro de la serie De PyTorch a JAX y OpenXLA en Google Cloud.
+"""Checks the PyTorch to JAX and OpenXLA Field Guide and the unit repos cloned next to it.
 
-Consolida las métricas deterministas (Outside Judges) de los 5 repositorios
-prácticos, verifica la integridad de los diagramas (al menos 3 por repo, cada HTML con su SVG y PNG) en los
-6 repositorios y audita que todos los reportes de benchmark estén completos.
+For the index it checks its three diagrams. For each unit repo cloned in the same parent folder
+it checks the standard layout (judge, results JSON, terminal log, at least three diagrams, each
+HTML with its SVG and PNG) and collects the judge metrics in one JSON. Units you have not cloned
+are reported as skipped and do not count as a failure. It does not rerun the experiments: run
+`make all` inside each unit for that.
+
+    git clone https://github.com/ykro/jax-for-pytorch-devs.git ../jax-for-pytorch-devs
+    python3 scripts/verify_series.py
 """
 
 from __future__ import annotations
@@ -12,7 +17,8 @@ import json
 import pathlib
 import sys
 
-SERIES_ROOT = pathlib.Path(__file__).resolve().parents[2]
+INDEX_DIR = pathlib.Path(__file__).resolve().parents[1]
+SERIES_ROOT = INDEX_DIR.parent
 INDEX_SLUG = "jax-openxla-field-guide"
 PROJECTS = [
     ("jax-for-pytorch-devs", "verify_speedup.py"),
@@ -23,116 +29,103 @@ PROJECTS = [
 ]
 
 
-def _count_diagrams(repo_dir: pathlib.Path) -> dict[str, int]:
+def count_diagrams(repo_dir: pathlib.Path) -> dict[str, int]:
     diag_dir = repo_dir / "diagrams"
-    if not diag_dir.exists():
-        return {"html": 0, "svg": 0, "png": 0}
-    return {
-        "html": len(list(diag_dir.glob("*.html"))),
-        "svg": len(list(diag_dir.glob("*.svg"))),
-        "png": len(list(diag_dir.glob("*.png"))),
+    return {ext: len(list(diag_dir.glob(f"*.{ext}"))) for ext in ("html", "svg", "png")}
+
+
+def check_project(repo_dir: pathlib.Path, judge_script: str) -> dict[str, object]:
+    """Layout and metrics of one cloned unit repo."""
+    results_file = repo_dir / "benchmarks" / "latest_results.json"
+    terminal_file = repo_dir / "benchmarks" / "terminal_output.txt"
+    diagrams = count_diagrams(repo_dir)
+    status: dict[str, object] = {
+        "cloned": True,
+        "judge_script": (repo_dir / judge_script).exists(),
+        "results_file": results_file.exists(),
+        "terminal_output_file": terminal_file.exists(),
+        "diagrams": diagrams,
     }
+    passed = (
+        bool(status["judge_script"]) and bool(status["results_file"])
+        and bool(status["terminal_output_file"])
+        and diagrams["html"] >= 3
+        and diagrams["svg"] == diagrams["html"] == diagrams["png"]
+    )
+    if results_file.exists():
+        try:
+            status["metrics"] = json.loads(results_file.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            status["error"] = str(exc)
+            passed = False
+    status["passed"] = passed
+    return status
+
+
+def describe(status: dict[str, object]) -> str:
+    """One short line per unit: what is there, or what is missing."""
+    diagrams = status["diagrams"]
+    if status["passed"]:
+        return f"judge, results, log and {diagrams['html']} diagrams | PASS"
+    missing = [name for key, name in (("judge_script", "judge"), ("results_file", "results"),
+                                      ("terminal_output_file", "log")) if not status[key]]
+    if diagrams["html"] < 3 or not diagrams["svg"] == diagrams["html"] == diagrams["png"]:
+        missing.append(f"diagrams {diagrams}")
+    if "error" in status:
+        missing.append("readable results")
+    return f"missing {', '.join(missing)} | FAIL"
 
 
 def main() -> int:
-    index_dir = pathlib.Path(__file__).resolve().parents[1]
-    index_diagrams = _count_diagrams(index_dir)
-    all_passed = (
-        index_diagrams["html"] == 3
-        and index_diagrams["svg"] == 3
-        and index_diagrams["png"] == 3
-    )
-
-    projects_status: dict[str, object] = {}
-    total_html = index_diagrams["html"]
-    total_svg = index_diagrams["svg"]
-    total_png = index_diagrams["png"]
-
+    index_diagrams = count_diagrams(INDEX_DIR)
+    index_ok = all(n == 3 for n in index_diagrams.values())
     lines = [
-        "======================================================================",
-        "OUTSIDE JUDGE: JAX & OpenXLA Field Guide — index and project verification",
-        "======================================================================",
-        f"[Repo 0] {INDEX_SLUG}: diagrams={index_diagrams}",
+        "=" * 72,
+        "PyTorch to JAX and OpenXLA Field Guide · index and unit repos",
+        "=" * 72,
+        f"{INDEX_SLUG} (index): {index_diagrams['html']} diagrams | {'PASS' if index_ok else 'FAIL'}",
     ]
-
-    for idx, (slug, judge_script) in enumerate(PROJECTS, start=1):
+    projects: dict[str, object] = {}
+    checked, failed = 0, 0
+    for slug, judge_script in PROJECTS:
         repo_dir = SERIES_ROOT / slug
-        results_file = repo_dir / "benchmarks" / "latest_results.json"
-        terminal_file = repo_dir / "benchmarks" / "terminal_output.txt"
-        diag_counts = _count_diagrams(repo_dir)
-        total_html += diag_counts["html"]
-        total_svg += diag_counts["svg"]
-        total_png += diag_counts["png"]
+        if not repo_dir.is_dir():
+            projects[slug] = {"cloned": False, "passed": None}
+            lines.append(f"{slug}: skipped, not cloned")
+            continue
+        status = check_project(repo_dir, judge_script)
+        projects[slug] = status
+        checked += 1
+        failed += not status["passed"]
+        lines.append(f"{slug}: {describe(status)}")
 
-        repo_ok = (
-            repo_dir.exists()
-            and (repo_dir / judge_script).exists()
-            and results_file.exists()
-            and terminal_file.exists()
-            and diag_counts["html"] >= 3
-            and diag_counts["svg"] == diag_counts["html"]
-            and diag_counts["png"] == diag_counts["html"]
-        )
-        status: dict[str, object] = {
-            "exists": repo_dir.exists(),
-            "judge_script": (repo_dir / judge_script).exists(),
-            "results_file": results_file.exists(),
-            "terminal_output_file": terminal_file.exists(),
-            "diagrams": diag_counts,
-        }
-        if results_file.exists():
-            try:
-                metrics = json.loads(results_file.read_text(encoding="utf-8"))
-                status["metrics"] = metrics
-            except Exception as exc:  # noqa: BLE001
-                status["error"] = str(exc)
-                repo_ok = False
-        else:
-            repo_ok = False
+    all_passed = index_ok and checked > 0 and failed == 0
+    lines.append("-" * 72)
+    lines.append(f"{checked} checked, {len(PROJECTS) - checked} skipped, {failed} failed.")
+    if checked == 0:
+        first = PROJECTS[0][0]
+        lines.append("No unit of this path is cloned next to this repo, so there is nothing to check.")
+        lines.append("Clone at least the first one:")
+        lines.append(f"  git clone https://github.com/ykro/{first}.git ../{first}")
+    else:
+        lines.append("ALL CHECKED UNITS PASSED." if all_passed else "SOME UNITS FAILED.")
+    lines.append("=" * 72)
+    report = "\n".join(lines) + "\n"
 
-        status["passed"] = repo_ok
-        if not repo_ok:
-            all_passed = False
-        projects_status[slug] = status
-        lines.append(
-            f"[Repo {idx}] {slug}: passed={repo_ok} | diagrams={diag_counts} | "
-            f"results={results_file.exists()} | terminal_log={terminal_file.exists()}"
-        )
-
-    # At least 3 diagrams per repo (torchtpu-playbook ships 4); every HTML source has its SVG and PNG.
-    if total_html < 18 or total_svg != total_html or total_png != total_html:
-        all_passed = False
-
-    summary: dict[str, object] = {
-        "index_repo": {
-            "slug": INDEX_SLUG,
-            "diagrams": index_diagrams,
-        },
-        "total_diagrams": {
-            "html": total_html,
-            "svg": total_svg,
-            "png": total_png,
-        },
-        "projects": projects_status,
+    summary = {
+        "index_repo": {"slug": INDEX_SLUG, "diagrams": index_diagrams, "passed": index_ok},
+        "checked": checked,
+        "skipped": len(PROJECTS) - checked,
+        "projects": projects,
         "all_passed": all_passed,
     }
-
-    lines.append("----------------------------------------------------------------------")
-    lines.append(
-        f"OVERALL SERIES STATUS: {'PASS' if all_passed else 'FAIL'} "
-        f"(html={total_html}, svg={total_svg}, png={total_png}; minimum 18 each)"
-    )
-    lines.append("======================================================================")
-    terminal_report = "\n".join(lines) + "\n"
-
-    bench_dir = index_dir / "benchmarks"
+    bench_dir = INDEX_DIR / "benchmarks"
     bench_dir.mkdir(parents=True, exist_ok=True)
-    json_payload = json.dumps(summary, indent=2, ensure_ascii=False) + "\n"
-    (bench_dir / "series_summary.json").write_text(json_payload, encoding="utf-8")
-    (bench_dir / "latest_results.json").write_text(json_payload, encoding="utf-8")
-    (bench_dir / "terminal_output.txt").write_text(terminal_report, encoding="utf-8")
-
-    print(terminal_report, end="")
+    payload = json.dumps(summary, indent=2, ensure_ascii=False) + "\n"
+    (bench_dir / "series_summary.json").write_text(payload, encoding="utf-8")
+    (bench_dir / "latest_results.json").write_text(payload, encoding="utf-8")
+    (bench_dir / "terminal_output.txt").write_text(report, encoding="utf-8")
+    print(report, end="")
     return 0 if all_passed else 1
 
 

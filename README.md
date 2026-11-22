@@ -1,6 +1,6 @@
 # Field Guide: De PyTorch a JAX y OpenXLA en Google Cloud
 
-**Por qué es relevante:** El rendimiento real en GPUs modernas y Cloud TPUs depende del compilador (`OpenXLA` y `StableHLO`), no solo de la sintaxis en Python. Esta serie demuestra con código verificable cómo pasar de loops imperativos en PyTorch a grafos fusionados, particionamiento distribuido y post-entrenamiento de modelos abiertos.
+**Por qué es relevante:** El rendimiento real en GPUs modernas y Cloud TPUs depende del compilador (`OpenXLA` y `StableHLO`) tanto como de la sintaxis en Python. Esta serie demuestra con código verificable cómo pasar de loops imperativos en PyTorch a grafos fusionados, particionamiento distribuido y post-entrenamiento de modelos abiertos.
 **Para quién es:** Desarrolladores e ingenieros de Machine Learning que dominan PyTorch y buscan adoptar `JAX`, `Flax NNX`, `Keras 3`, post-training estilo `Gemma` con GRPO estilo `Tunix` o PyTorch en Cloud TPU con `TorchTPU` con garantías de rendimiento.
 **Quién debería verlo:** Equipos de ingeniería de IA, arquitectos de inferencia/entrenamiento y líderes técnicos que operan cargas sobre GPUs (`NVIDIA L4` / `A100`) y `Cloud TPU v5e/v6e` en Google Cloud.
 **Serie paralela para Software Devs (sin experiencia previa en PyTorch):** [JAX & ML for Software Devs Field Guide](https://github.com/ykro/jax-ml-for-software-devs-field-guide).
@@ -31,7 +31,7 @@ Cada repositorio contiene **5 experimentos ejecutables (`01` a `05`)**, suite de
 
 | # | Repositorio | Qué construye y demuestra | Outside Judge (Evidencia real medida) |
 |---|---|---|---|
-| **1** | [jax-for-pytorch-devs](https://github.com/ykro/jax-for-pytorch-devs) | Transición de loops imperativos de PyTorch a funciones puras, PyTrees, `@jax.jit`, `jax.vmap`, `jax.lax.scan` y *static bucket padding*. | **8.85x** con `@jax.jit` contra la misma función en JAX eager (5.64x contra PyTorch eager, sin `torch.compile`), **138.78x** en gradientes per-sample con `vmap` contra un loop de Python en JAX, **12.01x** con `lax.scan` contra un loop de Python de pasos compilados, y **24 → 3 compilaciones** con static bucket padding (53.76x sin contar el warmup de las cubetas). Paridad `max_diff <= 3.34e-06`. |
+| **1** | [jax-for-pytorch-devs](https://github.com/ykro/jax-for-pytorch-devs) | Transición de loops imperativos de PyTorch a funciones puras, PyTrees, `@jax.jit`, `jax.vmap`, `jax.lax.scan` y *static bucket padding*. | **8.85x** con `@jax.jit` contra la misma función en JAX eager (5.64x contra PyTorch eager, sin `torch.compile`), **138.78x** en gradientes per-sample con `vmap` contra un loop de Python en JAX, **12.01x** con `lax.scan` contra un loop de Python de pasos compilados, y **24 → 3 compilaciones** con static bucket padding (53.76x sin contar el warmup de los buckets). Paridad `max_diff <= 3.34e-06`. |
 | **2** | [flax-nnx-transformer-from-scratch](https://github.com/ykro/flax-nnx-transformer-from-scratch) | Construcción de un Transformer causal con RoPE, RMSNorm y SwiGLU en `Flax NNX` (`nnx.Module`, `nnx.split`/`nnx.merge`, `@nnx.jit`). | Paridad `< 1e-6` con PyTorch, **1 traza y 0 recompilaciones** en 50 pasos con `@nnx.jit` (57 ops `dot_general`, cientos de fusiones en CPU), y el primer paso con compilación (`449.39 ms`) tarda **~136x** lo que un paso en caché (`3.3 ms`). Pérdida monótona `5.3140 -> 0.0105` sobre un batch fijo. |
 | **3** | [keras3-multibackend-arena](https://github.com/ykro/keras3-multibackend-arena) | Red multimodal Vision+Tabular (`657,418` parámetros) escrita una sola vez con `keras.ops` y evaluada en `KERAS_BACKEND=jax`, `torch` y `numpy`, más un endpoint HTTP preparado para `Cloud Run`. | Paridad entre backends dentro del redondeo `float32` (`max_diff = 2.98e-07`). Keras-jax compilado en CPU contra Keras-torch eager en MPS (una Mac) da **~2x en entrenamiento** (`24,794.8` vs `12,401.3 samples/s`) y **1.82x en inferencia**; compilar, aislado en el mismo CPU, da **1.77x** en el forward. |
 | **4** | [gemma-tunix-spanish-posttraining](https://github.com/ykro/gemma-tunix-spanish-posttraining) | Post-entrenamiento de un modelo estilo `Gemma 2` con pesos aleatorios (`4.2M` params base, sin checkpoint) sobre un mesh 2D (`data`, `model`) simulado con 4 dispositivos en CPU, LoRA quirúrgico y **GRPO** escrito a mano al estilo `Tunix`. | **97.90% reducción** de parámetros entrenables con LoRA (`0.0` drift en pesos base), **2.0x** menos pesos por dispositivo en el mesh `2x2` (aritmética del `PartitionSpec`), y recompensa greedy de **`-0.0625` a `+1.4875`** con **75%** de formato XML, tras 4 pasos de SFT de calentamiento y 24 de GRPO, evaluada sobre los mismos 4 prompts de entrenamiento. |
@@ -61,4 +61,26 @@ cd jax-openxla-field-guide
 python3 scripts/verify_series.py
 ```
 
-El reporte consolidado se almacena automáticamente en `benchmarks/series_summary.json`.
+El verificador busca los cinco repositorios en la carpeta de al lado. Los que no has clonado salen como `skipped, not cloned` y no cuentan como falla; de los que sí están revisa su juez, su reporte, su log y sus diagramas. El reporte consolidado se almacena en `benchmarks/series_summary.json`. Los experimentos se vuelven a correr dentro de cada repositorio con `make all`.
+
+---
+
+## Práctica, qué cambia de PyTorch a JAX y qué hace el compilador
+
+La carpeta `practica/` trae los fragmentos que se escriben en el video de práctica, cada uno con su test en `tests/test_practica.py`. Todo corre en el CPU de una laptop en segundos, sin GPU ni red. `03_compilado_roto.py` falla a propósito: el error es parte del ejercicio. Los tiempos cambian entre corridas; lo que se mantiene son las pérdidas, las operaciones, las compilaciones y los pedazos por dispositivo.
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r requirements.txt   # JAX para CPU, PyTorch, NumPy, pytest y ruff
+# En Linux, para no bajar PyTorch con CUDA: agrega --extra-index-url https://download.pytorch.org/whl/cpu
+
+python3 practica/01_lado_a_lado.py       # el mismo paso de entrenamiento en PyTorch y en JAX, misma pérdida
+python3 practica/02_capas.py             # jaxpr, StableHLO y las fusiones del HLO compilado
+python3 practica/03_compilado_roto.py    # falla a propósito: el ejecutable compilado no acepta otra forma
+python3 practica/03_compilar.py          # jax.jit guarda un ejecutable por forma
+python3 practica/04_dispositivos.py      # cuatro dispositivos simulados en el CPU y un all-reduce
+
+git clone https://github.com/ykro/jax-for-pytorch-devs.git ../jax-for-pytorch-devs
+make all                                 # lint, tests y verificador del índice
+```

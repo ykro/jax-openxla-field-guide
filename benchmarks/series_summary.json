@@ -5,16 +5,14 @@
       "html": 3,
       "svg": 3,
       "png": 3
-    }
+    },
+    "passed": true
   },
-  "total_diagrams": {
-    "html": 19,
-    "svg": 19,
-    "png": 19
-  },
+  "checked": 5,
+  "skipped": 0,
   "projects": {
     "jax-for-pytorch-devs": {
-      "exists": true,
+      "cloned": true,
       "judge_script": true,
       "results_file": true,
       "terminal_output_file": true,
@@ -35,14 +33,14 @@
           "cpu_count": 10,
           "timing": "median per call after warmup (01, 03, 04); single pass (05)",
           "load_average_before": [
-            11.39,
-            27.87,
-            36.05
+            5.53,
+            6.69,
+            9.3
           ],
           "load_average_after": [
-            10.88,
-            27.49,
-            35.86
+            5.48,
+            6.67,
+            9.28
           ]
         },
         "experiments": {
@@ -50,11 +48,11 @@
             "batch_size": 64,
             "hidden_dim": 128,
             "n_iters": 100,
-            "torch_eager_ms": 0.8752,
-            "jax_eager_ms": 1.4849,
-            "jax_jit_ms": 0.162,
-            "speedup_vs_jax_eager": 9.17,
-            "speedup_vs_torch_eager": 5.4,
+            "torch_eager_ms": 0.8348,
+            "jax_eager_ms": 1.4469,
+            "jax_jit_ms": 0.147,
+            "speedup_vs_jax_eager": 9.85,
+            "speedup_vs_torch_eager": 5.68,
             "max_diff_torch_jit": 3.337860107421875e-06,
             "max_diff_eager_jit": 2.384185791015625e-06,
             "jaxpr_num_equations": 168,
@@ -78,9 +76,9 @@
             "in_dim": 64,
             "out_dim": 16,
             "n_iters": 20,
-            "loop_ms": 23.5285,
-            "vmap_ms": 0.1234,
-            "speedup": 190.64,
+            "loop_ms": 23.5479,
+            "vmap_ms": 0.0854,
+            "speedup": 275.75,
             "max_diff_gw": 1.3969838619232178e-09,
             "max_diff_gb": 9.313225746154785e-10,
             "loop_traced_ops": 2054
@@ -90,9 +88,9 @@
             "batch_size": 32,
             "hidden_dim": 64,
             "n_iters": 15,
-            "python_loop_ms": 28.0787,
-            "lax_scan_ms": 2.825,
-            "speedup": 9.94,
+            "python_loop_ms": 28.7024,
+            "lax_scan_ms": 2.8633,
+            "speedup": 10.02,
             "max_diff_final": 0.0,
             "max_diff_traj": 0.0,
             "top_level_jaxpr_eqns": 1,
@@ -109,9 +107,9 @@
             "naive_trace_count": 24,
             "bucket_warmup_traces": 3,
             "bucket_extra_recompilations": 0,
-            "naive_total_ms": 975.81,
-            "bucket_total_ms": 17.58,
-            "speedup": 55.5,
+            "naive_total_ms": 1173.93,
+            "bucket_total_ms": 20.19,
+            "speedup": 58.15,
             "max_output_diff": 8.940696716308594e-08,
             "real_tokens": 3048,
             "padded_tokens": 4224,
@@ -123,7 +121,7 @@
       "passed": true
     },
     "flax-nnx-transformer-from-scratch": {
-      "exists": true,
+      "cloned": true,
       "judge_script": true,
       "results_file": true,
       "terminal_output_file": true,
@@ -250,7 +248,7 @@
       "passed": true
     },
     "keras3-multibackend-arena": {
-      "exists": true,
+      "cloned": true,
       "judge_script": true,
       "results_file": true,
       "terminal_output_file": true,
@@ -394,7 +392,7 @@
       "passed": true
     },
     "gemma-tunix-spanish-posttraining": {
-      "exists": true,
+      "cloned": true,
       "judge_script": true,
       "results_file": true,
       "terminal_output_file": true,
@@ -606,7 +604,7 @@
       "passed": true
     },
     "torchtpu-playbook": {
-      "exists": true,
+      "cloned": true,
       "judge_script": true,
       "results_file": true,
       "terminal_output_file": true,
